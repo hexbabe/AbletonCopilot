@@ -10,6 +10,7 @@ class CommandType(Enum):
     PLAY = "play"
     STOP = "stop"
     GET_PLAYING_STATUS = "get_playing_status"
+    CREATE_MIDI_TRACK = "create_midi_track"
 
 @dataclass
 class Command:

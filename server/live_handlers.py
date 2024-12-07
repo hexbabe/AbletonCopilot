@@ -6,7 +6,7 @@ class LiveSetHandler:
     """Handles all interactions with the Live set"""
     
     def __init__(self, song: Live.Song.Song):
-        self.song = song
+        self.song: Live.Song.Song = song
 
     def set_tempo(self, params: Dict) -> Response:
         """Set the tempo in the Live set"""
@@ -59,6 +59,31 @@ class LiveSetHandler:
             return Response(
                 success=True,
                 data={"is_playing": self.song.is_playing}
+            )
+        except Exception as e:
+            return Response(success=False, error=str(e))
+
+    def create_midi_track(self, params: Dict) -> Response:
+        """Create a new MIDI track with specified name"""
+        try:
+            # Get track name from params, default to "New MIDI Track"
+            track_name = params.get('name', 'New MIDI Track')
+            
+            # Create new MIDI track
+            self.song.create_midi_track()
+
+            # Get the newly created track (it will be the last MIDI track)
+            new_track = self.song.tracks[-1]
+
+            # Set the track name
+            new_track.name = track_name
+            
+            return Response(
+                success=True,
+                data={
+                    "track_name": track_name,
+                    "track_index": len(self.song.tracks) - 1
+                }
             )
         except Exception as e:
             return Response(success=False, error=str(e))

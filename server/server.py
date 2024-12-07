@@ -35,7 +35,8 @@ class AbletonCopilotServer:
             CommandType.GET_TEMPO: self.live_handler.get_tempo,
             CommandType.PLAY: self.live_handler.play,
             CommandType.STOP: self.live_handler.stop,
-            CommandType.GET_PLAYING_STATUS: self.live_handler.get_playing_status
+            CommandType.GET_PLAYING_STATUS: self.live_handler.get_playing_status,
+            CommandType.CREATE_MIDI_TRACK: self.live_handler.create_midi_track
         }
         
         self.log_message("Copilot script initializing...")

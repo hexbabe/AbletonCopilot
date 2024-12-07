@@ -54,6 +54,14 @@ class LiveClient:
         """Get current playing status"""
         command = Command(command=CommandType.GET_PLAYING_STATUS)
         return self.send_command(command)
+    
+    def create_midi_track(self, name: str) -> Response:
+        """Create a new MIDI track with the specified name"""
+        command = Command(
+            command=CommandType.CREATE_MIDI_TRACK,
+            params={'name': name}
+        )
+        return self.send_command(command)
 
 def run_tests():
     """Run a series of tests to verify all functionality"""
@@ -127,6 +135,15 @@ def run_tests():
     response = client.get_playing_status()
     if response.success:
         print(f"Currently playing: {response.data['is_playing']}")
+    else:
+        print(f"Error: {response.error}")
+
+    # Test 9: Create MIDI Track
+    print_test_header("Creating MIDI Track")
+    track_name = "Test MIDI Track"
+    response = client.create_midi_track(track_name)
+    if response.success:
+        print(f"Created MIDI track '{response.data['track_name']}' at index {response.data['track_index']}")
     else:
         print(f"Error: {response.error}")
 

@@ -1,6 +1,6 @@
 import Live
 from typing import Dict
-from .protocol import Response
+from ..protocol.protocol import Response
 
 class LiveSetHandler:
     """Handles all interactions with the Live set"""

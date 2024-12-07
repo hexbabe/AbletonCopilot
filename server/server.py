@@ -8,7 +8,7 @@ import Live
 import traceback
 import os
 from datetime import datetime
-from .protocol import Command, Response, CommandType
+from ..protocol.protocol import Command, Response, CommandType
 from .live_handlers import LiveSetHandler
 
 class AbletonCopilotServer:

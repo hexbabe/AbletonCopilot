@@ -15,9 +15,9 @@ from .song_handler import SongHandler
 class AbletonCopilotServer(ControlSurface):
     """Main server class that handles socket connections and Live set control"""
 
-    def __init__(self, c_instance, log_file_path):
+    def __init__(self, c_instance, log):
         self._c_instance = c_instance
-        self.log_file_path = log_file_path
+        self.log: Callable = log
         self._do_send_midi = self._c_instance.send_midi
 
         # Initialize base ControlSurface
@@ -35,7 +35,7 @@ class AbletonCopilotServer(ControlSurface):
         # Initialize song handler
         if not hasattr(self._song, 'tempo') or not hasattr(self._tasks, 'add'):
             raise AttributeError("Required attributes 'tempo' and 'add' are missing from song or tasks.")
-        self.song_handler = SongHandler(self._song, self._tasks)
+        self.song_handler = SongHandler(self._song, self._tasks, self.log)
         
         self.command_handlers: Dict[CommandType, Callable] = {
             CommandType.SET_TEMPO: self.song_handler.handle_set_tempo,
@@ -43,16 +43,17 @@ class AbletonCopilotServer(ControlSurface):
             CommandType.PLAY: self.song_handler.handle_play,
             CommandType.STOP: self.song_handler.handle_stop,
             CommandType.GET_PLAYING_STATUS: self.song_handler.handle_get_playing_status,
-            CommandType.CREATE_MIDI_TRACK: self.song_handler.handle_create_midi_track
+            CommandType.CREATE_MIDI_TRACK: self.song_handler.handle_create_midi_track,
+            CommandType.CREATE_MIDI_CLIP: self.song_handler.handle_create_midi_clip
         }
         
-        self.log_message("Copilot script initializing...")
+        self.log("Copilot script initializing...")
         try:
             self.start_server()
-            self.log_message(f"Server started successfully on port {self.port}")
+            self.log(f"Server started successfully on port {self.port}")
         except Exception as e:
-            self.log_message(f"Error starting server: {str(e)}")
-            self.log_message(traceback.format_exc())
+            self.log(f"Error starting server: {str(e)}")
+            self.log(traceback.format_exc())
     
     def log_message(self, message: str) -> None:
         """Log a message to our custom log file."""
@@ -77,7 +78,7 @@ class AbletonCopilotServer(ControlSurface):
             self.server_thread.daemon = True
             self.server_thread.start()
         except Exception as e:
-            self.log_message(f"Error in start_server: {str(e)}")
+            self.log(f"Error in start_server: {str(e)}")
             raise
 
     def handle_connections(self) -> None:
@@ -88,7 +89,7 @@ class AbletonCopilotServer(ControlSurface):
                 threading.Thread(target=self.handle_client, 
                                args=(client, address)).start()
             except Exception as e:
-                self.log_message(f"Connection handling error: {str(e)}")
+                self.log(f"Connection handling error: {str(e)}")
                 continue
 
     def handle_client(self, client: socket.socket, address: tuple) -> None:
@@ -96,7 +97,7 @@ class AbletonCopilotServer(ControlSurface):
         try:
             with client:
                 data = client.recv(4096).decode()
-                self.log_message(f"Received data from {address}: {data}")
+                self.log(f"Received data from {address}: {data}")
                 
                 try:
                     command = Command.from_json(data)
@@ -118,12 +119,12 @@ class AbletonCopilotServer(ControlSurface):
                 client.send(response.to_json().encode())
                 
         except Exception as e:
-            self.log_message(f"Error handling client {address}: {str(e)}")
-            self.log_message(traceback.format_exc())
+            self.log(f"Error handling client {address}: {str(e)}")
+            self.log(traceback.format_exc())
 
     def disconnect(self) -> None:
         """Clean up on script shutdown."""
-        self.log_message("Copilot script disconnecting...")
+        self.log("Copilot script disconnecting...")
         if hasattr(self, '_tasks'):
             self._tasks.kill()
         if hasattr(self, 'server'):

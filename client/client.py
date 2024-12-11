@@ -63,6 +63,19 @@ class LiveClient:
         )
         return self.send_command(command)
 
+    def create_midi_clip(self, track_index=None, track_name=None, clip_start=0.0, clip_length=4.0) -> Response:
+        """Create a MIDI clip in the specified track"""
+        command = Command(
+            command=CommandType.CREATE_MIDI_CLIP,
+            params={
+                'track_index': track_index,
+                'track_name': track_name,
+                'clip_start': clip_start,
+                'clip_length': clip_length
+            }
+        )
+        return self.send_command(command)
+
 def run_tests():
     """Run a series of tests to verify all functionality"""
     client = LiveClient()
@@ -144,6 +157,34 @@ def run_tests():
     response = client.create_midi_track(track_name)
     if response.success:
         print(f"Created MIDI track '{response.data['track_name']}' at index {response.data['track_index']}")
+    else:
+        print(f"Error: {response.error}")
+    
+    # Test 10: Create MIDI Clip by Track Index
+    print_test_header("Creating MIDI Clip by Index")
+    response = client.create_midi_clip(
+        track_index=0,
+        clip_start=1.0,
+        clip_length=4.0
+    )
+    if response.success:
+        print(f"Created MIDI clip in track {response.data['track_name']}")
+        print(f"Clip position: {response.data['clip_slot_index']}")
+        print(f"Clip length: {response.data['clip_length']} beats")
+    else:
+        print(f"Error: {response.error}")
+
+    # Test 11: Create MIDI Clip by Track Name
+    print_test_header("Creating MIDI Clip by Name")
+    response = client.create_midi_clip(
+        track_name="Test MIDI Track",
+        clip_start=4.0,  # Start at bar 2
+        clip_length=8.0  # 2 bars long
+    )
+    if response.success:
+        print(f"Created MIDI clip in track {response.data['track_name']}")
+        print(f"Clip slot index: {response.data['clip_slot_index']}")
+        print(f"Clip length: {response.data['clip_length']} beats")
     else:
         print(f"Error: {response.error}")
 

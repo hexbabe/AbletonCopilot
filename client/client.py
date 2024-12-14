@@ -76,6 +76,20 @@ class LiveClient:
         )
         return self.send_command(command)
 
+    def create_midi_notes(self, track_index=None, track_name=None, notes_info=None) -> Response:
+        """Create multiple MIDI notes in the specified track and clip slot"""
+        if not isinstance(notes_info, list) or len(notes_info) == 0:
+            raise ValueError("notes_info is required as a list of dictionaries with pitch, start_time, duration, and velocity keys")
+        command = Command(
+            command=CommandType.CREATE_MIDI_NOTES,
+            params={
+                'track_index': track_index,
+                'track_name': track_name,
+                'notes_info': notes_info
+            }
+        )
+        return self.send_command(command)
+
 def run_tests():
     """Run a series of tests to verify all functionality"""
     client = LiveClient()
@@ -185,6 +199,32 @@ def run_tests():
         print(f"Created MIDI clip in track {response.data['track_name']}")
         print(f"Clip slot index: {response.data['clip_slot_index']}")
         print(f"Clip length: {response.data['clip_length']} beats")
+    else:
+        print(f"Error: {response.error}")
+
+    # Test 12: Create MIDI Notes
+    print_test_header("Creating MIDI Notes")
+    response = client.create_midi_notes(
+        track_index=0,
+        notes_info=[
+            {
+                'note_pitch': 60,
+                'note_start': 0.0,
+                'note_duration': 1.0,
+                'note_velocity': 100
+            },
+            {
+                'note_pitch': 62,
+                'note_start': 1.0,
+                'note_duration': 1.0,
+                'note_velocity': 100
+            }
+        ]
+    )
+    if response.success:
+        print(f"Created MIDI notes in track {response.data['track_name']}")
+        for note in response.data['notes_info']:
+            print(f"Note pitch: {note['note_pitch']}, start: {note['note_start']}, duration: {note['note_duration']}, velocity: {note['note_velocity']}")
     else:
         print(f"Error: {response.error}")
 

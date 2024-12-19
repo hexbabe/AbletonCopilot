@@ -1,5 +1,6 @@
 import socket
 import time
+
 from protocol.protocol import Command, Response, CommandType
 
 class LiveClient:
@@ -64,7 +65,14 @@ class LiveClient:
         return self.send_command(command)
 
     def create_midi_clip(self, track_index=None, track_name=None, clip_start=0.0, clip_length=4.0) -> Response:
-        """Create a MIDI clip in the specified track"""
+        """Create a MIDI clip in the specified track. Between track index and track name, please specify one.
+
+        Parameters:
+            track_index (Optional[int]): The index of the track where the MIDI clip will be created.
+            track_name (Optional[str]): The name of the track where the MIDI clip will be created.
+            clip_start (float): The start time of the clip in beats.
+            clip_length (float): The length of the clip in beats.
+        """
         command = Command(
             command=CommandType.CREATE_MIDI_CLIP,
             params={
@@ -77,7 +85,17 @@ class LiveClient:
         return self.send_command(command)
 
     def create_midi_notes(self, track_index=None, track_name=None, notes_info=None) -> Response:
-        """Create multiple MIDI notes in the specified track and clip slot"""
+        """Create multiple MIDI notes in the specified track and clip slot.
+
+        Parameters:
+            track_index (Optional[int]): The index of the track where the MIDI notes will be created.
+            track_name (Optional[str]): The name of the track where the MIDI notes will be created.
+            notes_info (List[Dict[str, Union[int, float]]]): A list of dictionaries, each required, each representing a MIDI note with the following schema:
+                - note_pitch (int): The pitch of the note (MIDI number).
+                - note_start (float): The start time of the note in beats.
+                - note_duration (float): The duration of the note in beats.
+                - note_velocity (int): The velocity of the note.
+        """
         if not isinstance(notes_info, list) or len(notes_info) == 0:
             raise ValueError("notes_info is required as a list of dictionaries with pitch, start_time, duration, and velocity keys")
         command = Command(

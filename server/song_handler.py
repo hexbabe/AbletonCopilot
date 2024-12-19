@@ -97,16 +97,17 @@ class SongHandler:
             track_index = params.get('track_index')
             track_name = params.get('track_name')
             
-            if track_index is not None:
+            if track_name is not None:
+                matching_tracks = [t for t in self._song.tracks if t.name == track_name]
+                self.log(f"Matching tracks: {[t.name for t in matching_tracks]}") # test this
+                if not matching_tracks:
+                    return Response(success=False, error=f"No track found with name: {track_name}")
+                track = matching_tracks[0]
+            elif track_index is not None:
                 track_index = int(track_index)
                 if track_index >= len(self._song.tracks):
                     return Response(success=False, error="Track index out of range")
                 track = self._song.tracks[track_index]
-            elif track_name is not None:
-                matching_tracks = [t for t in self._song.tracks if t.name == track_name]
-                if not matching_tracks:
-                    return Response(success=False, error=f"No track found with name: {track_name}")
-                track = matching_tracks[0]
             else:
                 return Response(success=False, error="Must specify either track_index or track_name")
 

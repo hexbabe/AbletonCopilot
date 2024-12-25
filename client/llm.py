@@ -147,7 +147,7 @@ Guidelines:
     ]
 
     completion = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=messages
     )
     return completion.choices[0].message.content

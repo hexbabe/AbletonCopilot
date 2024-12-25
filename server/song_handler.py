@@ -215,3 +215,10 @@ class SongHandler:
 
         except Exception as e:
             return Response(success=False, error=str(e))
+        
+    def handle_get_track_names(self, params: Dict) -> Response:
+        """Get the names of all tracks in the current song"""
+        try:
+            return Response(success=True, data={"track_names": [t.name for t in self._song.tracks]})
+        except Exception as e:
+            return Response(success=False, error=str(e))

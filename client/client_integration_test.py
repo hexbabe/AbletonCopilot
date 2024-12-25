@@ -139,6 +139,14 @@ def run_tests():
     else:
         print(f"Error: {response.error}")
 
+    # Test 13: Get Track Names
+    print_test_header("Getting Track Names")
+    response = client.get_track_names()
+    if response.success:
+        print(f"Track names: {response.data['track_names']}")
+    else:
+        print(f"Error: {response.error}")
+
 if __name__ == "__main__":
     print("Starting Ableton Live Copilot test suite...")
     run_tests()

@@ -14,6 +14,8 @@ class CommandType(Enum):
     CREATE_MIDI_CLIP = "create_midi_clip"
     CREATE_MIDI_NOTES = "create_midi_notes"
     GET_TRACK_NAMES = "get_track_names"
+    SET_TRACK_NAME = "set_track_name"
+
 @dataclass
 class Command:
     """Represents a command sent from client to server"""

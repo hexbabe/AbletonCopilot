@@ -222,3 +222,36 @@ class SongHandler:
             return Response(success=True, data={"track_names": [t.name for t in self._song.tracks]})
         except Exception as e:
             return Response(success=False, error=str(e))
+        
+    def handle_set_track_name(self, params: Dict) -> Response:
+        """Set the name of a track"""
+        try:
+            track_index = params.get('track_index')
+            old_name = params.get('old_name')
+            new_name = params.get('new_name')
+            if new_name == old_name:
+                return Response(success=True)
+            if not new_name:
+                return Response(success=False, error="New name cannot be empty")
+
+            if track_index is not None:
+                track = self._song.tracks[track_index]
+            elif old_name is not None:
+                matching_tracks = [t for t in self._song.tracks if t.name == old_name]
+                if not matching_tracks:
+                    return Response(success=False, error=f"No track found with name: {old_name}")
+                track = matching_tracks[0]
+            else:
+                return Response(success=False, error="Must specify either track_index or old_name")
+
+            def do_set_track_name():
+                try:
+                    track.name = new_name
+                    self.log(f"Set track name from {old_name} to {new_name}")
+                except Exception as e:
+                    self.log(f"Failed to set track name: {str(e)}")
+
+            self._tasks.add(task.run(do_set_track_name))
+            return Response(success=True)
+        except Exception as e:
+            return Response(success=False, error=str(e))

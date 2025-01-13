@@ -115,3 +115,17 @@ class LiveClient:
         """Get the names of all tracks in the current song"""
         command = Command(command=CommandType.GET_TRACK_NAMES)
         return self.send_command(command)
+    
+    def set_track_name(self, track_index: int, old_name: str, new_name: str) -> Response:
+        """Set the name of a track. Between track_index and old_name, please specify only one.
+
+        Parameters:
+            track_index (int): The index of the track to set the name of.
+            old_name (str): The old name of the track.
+            new_name (str): The new name of the track.
+        """
+        command = Command(
+            command=CommandType.SET_TRACK_NAME,
+            params={'track_index': track_index, 'old_name': old_name, 'new_name': new_name}
+        )
+        return self.send_command(command)

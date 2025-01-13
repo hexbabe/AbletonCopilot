@@ -78,8 +78,7 @@ def run_tests():
 
     # Test 9: Create MIDI Track
     print_test_header("Creating MIDI Track")
-    track_name = "Test MIDI Track"
-    response = client.create_midi_track(track_name)
+    response = client.create_midi_track("Test Create Midi Track")
     if response.success:
         print(f"Created MIDI track '{response.data['track_name']}' at index {response.data['track_index']}")
     else:
@@ -88,7 +87,7 @@ def run_tests():
     # Test 10: Create MIDI Clip by Track Index
     print_test_header("Creating MIDI Clip by Index")
     response = client.create_midi_clip(
-        track_index=0,
+        track_index=-1,
         clip_start=1.0,
         clip_length=4.0
     )
@@ -101,8 +100,9 @@ def run_tests():
 
     # Test 11: Create MIDI Clip by Track Name
     print_test_header("Creating MIDI Clip by Name")
+    response = client.create_midi_track("Test Create Midi Clip")
     response = client.create_midi_clip(
-        track_name="Test MIDI Track",
+        track_name="Test Create MIDI Clip",
         clip_start=4.0,  # Start at bar 2
         clip_length=8.0  # 2 bars long
     )
@@ -116,7 +116,7 @@ def run_tests():
     # Test 12: Create MIDI Notes
     print_test_header("Creating MIDI Notes")
     response = client.create_midi_notes(
-        track_index=0,
+        track_index=-1,
         notes_info=[
             {
                 'note_pitch': 60,
@@ -144,6 +144,23 @@ def run_tests():
     response = client.get_track_names()
     if response.success:
         print(f"Track names: {response.data['track_names']}")
+    else:
+        print(f"Error: {response.error}")
+
+    # Test 14: Set Track Name by Index
+    print_test_header("Setting Track Name by Index")
+    client.create_midi_track("foo")
+    response = client.set_track_name(-1, None, "Test Rename Track Name 1")
+    if response.success:
+        print("Track name set successfully")
+    else:
+        print(f"Error: {response.error}")
+
+    # Test 15: Set Track Name by Name Only
+    print_test_header("Setting Track Name by Name Only") 
+    response = client.set_track_name(None, "Test Rename Track Name 1", "Test Rename Track Name 2")
+    if response.success:
+        print("Track name set successfully")
     else:
         print(f"Error: {response.error}")
 

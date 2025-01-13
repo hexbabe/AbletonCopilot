@@ -46,7 +46,8 @@ class AbletonCopilotServer(ControlSurface):
             CommandType.CREATE_MIDI_TRACK: self.song_handler.handle_create_midi_track,
             CommandType.CREATE_MIDI_CLIP: self.song_handler.handle_create_midi_clip,
             CommandType.CREATE_MIDI_NOTES: self.song_handler.handle_create_midi_notes,
-            CommandType.GET_TRACK_NAMES: self.song_handler.handle_get_track_names
+            CommandType.GET_TRACK_NAMES: self.song_handler.handle_get_track_names,
+            CommandType.SET_TRACK_NAME: self.song_handler.handle_set_track_name
         }
         
         self.log("Copilot script initializing...")

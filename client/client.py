@@ -94,7 +94,7 @@ class LiveClient:
             track_index (Optional[int]): The index of the track where the MIDI notes will be created.
             track_name (Optional[str]): The name of the track where the MIDI notes will be created.
             notes_info (List[Dict[str, Union[int, float]]]): A list of dictionaries, each required, each representing a MIDI note with the following schema:
-                - note_pitch (int): The pitch of the note (MIDI number). This is in line with Ableton Live's system of MIDI numbers.
+                - note_pitch (int): The pitch of the note (MIDI number). This is in line with Ableton Live's system of MIDI numbers. For example, middle C corresponds to MIDI number 60. Other examples include C# (61), D (62), D# (63), E (64), F (65), F# (66), G (67), G# (68), A (69), A# (70), and B (71). Each note's pitch is represented by its respective MIDI number, which allows for precise control over the musical notes being played.
                 - note_start (float): The start time of the note in beats. For example, a sixteenth note on the 4th beat of a 4/4 measure would be 3.5.
                 - note_duration (float): The duration of the note in beats. For example, a sixteenth note would be 0.25.
                 - note_velocity (int): The velocity of the note.

@@ -255,3 +255,104 @@ class SongHandler:
             return Response(success=True)
         except Exception as e:
             return Response(success=False, error=str(e))
+
+    def handle_delete_track(self, params: Dict) -> Response:
+        """Delete a track by index or name
+        
+        Args:
+            params: Dict containing either:
+                - track_index: int - Index of track to delete
+                - track_name: str - Name of track to delete
+        """
+        try:
+            track_index = params.get('track_index')
+            track_name = params.get('track_name')
+            
+            if track_index is None and track_name is None:
+                return Response(success=False, error="Must specify either track_index or track_name")
+            
+            # Find the track to delete
+            if track_index is not None:
+                if not isinstance(track_index, int):
+                    return Response(success=False, error="track_index must be an integer")
+                if track_index < 0 or track_index >= len(self._song.tracks):
+                    return Response(success=False, error=f"Track index {track_index} out of range")
+                track = self._song.tracks[track_index]
+            else:
+                # Find track by name
+                matching_tracks = [t for t in self._song.tracks if t.name == track_name]
+                if not matching_tracks:
+                    return Response(success=False, error=f"No track found with name: {track_name}")
+                if len(matching_tracks) > 1:
+                    return Response(success=False, error=f"Multiple tracks found with name: {track_name}")
+                track = matching_tracks[0]
+                track_index = list(self._song.tracks).index(track)
+            
+            # Store track info for response
+            track_info = {
+                "track_index": track_index,
+                "track_name": track.name
+            }
+            
+            def do_delete_track():
+                try:
+                    # Verify track still exists
+                    if track_index >= len(self._song.tracks):
+                        self.log(f"Track at index {track_index} no longer exists")
+                        return
+                    if self._song.tracks[track_index] != track:
+                        self.log(f"Track at index {track_index} has changed")
+                        return
+                    self._song.delete_track(track_index)
+                    self.log(f"Deleted track: {track_info['track_name']} at index {track_info['track_index']}")
+                except Exception as e:
+                    self.log(f"Failed to delete track: {str(e)}")
+            
+            # Schedule track deletion on next tick
+            self._tasks.add(task.run(do_delete_track))
+            
+            return Response(success=True, data=track_info)
+            
+        except Exception as e:
+            return Response(success=False, error=f"Error deleting track: {str(e)}")
+
+    def handle_get_track_index(self, params: Dict) -> Response:
+        """Get all indices of tracks matching the given name
+        
+        Args:
+            params: Dict containing:
+                - track_name: str - Name of tracks to find
+                
+        Returns:
+            Response with list of track indices matching the name
+        """
+        try:
+            track_name = params.get('track_name')
+            if not track_name:
+                return Response(success=False, error="track_name parameter is required")
+            
+            # Find all matching tracks and their indices
+            matching_tracks = [
+                (i, t) for i, t in enumerate(self._song.tracks) 
+                if t.name == track_name
+            ]
+            
+            if not matching_tracks:
+                return Response(
+                    success=False, 
+                    error=f"No tracks found with name: {track_name}"
+                )
+            
+            # Return all matching indices
+            indices = [i for i, _ in matching_tracks]
+            return Response(
+                success=True,
+                data={
+                    "track_indices": indices,
+                    "track_name": track_name,
+                    "count": len(indices)
+                }
+            )
+            
+        except Exception as e:
+            return Response(success=False, error=f"Error getting track indices: {str(e)}")

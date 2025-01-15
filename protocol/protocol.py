@@ -15,6 +15,8 @@ class CommandType(Enum):
     CREATE_MIDI_NOTES = "create_midi_notes"
     GET_TRACK_NAMES = "get_track_names"
     SET_TRACK_NAME = "set_track_name"
+    DELETE_TRACK = "delete_track"
+    GET_TRACK_INDEX = "get_track_index"
 
 @dataclass
 class Command:

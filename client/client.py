@@ -94,7 +94,7 @@ class LiveClient:
             track_index (Optional[int]): The index of the track where the MIDI notes will be created.
             track_name (Optional[str]): The name of the track where the MIDI notes will be created.
             notes_info (List[Dict[str, Union[int, float]]]): A list of dictionaries, each required, each representing a MIDI note with the following schema:
-                - note_pitch (int): The pitch of the note (MIDI number). This is in line with Ableton Live's system of MIDI numbers. For example, middle C corresponds to MIDI number 60. Other examples include C# (61), D (62), D# (63), E (64), F (65), F# (66), G (67), G# (68), A (69), A# (70), and B (71). Each note's pitch is represented by its respective MIDI number, which allows for precise control over the musical notes being played.
+                - note_pitch (int): The pitch of the note. This is in line with Ableton Live's system of MIDI numbers. For example, middle C corresponds to MIDI number 60. Other examples include C# (61), D (62), and B (71). Each note's pitch is represented by its respective MIDI number, which allows for precise control over the musical notes being played.
                 - note_start (float): The start time of the note in beats. For example, a sixteenth note on the 4th beat of a 4/4 measure would be 3.5.
                 - note_duration (float): The duration of the note in beats. For example, a sixteenth note would be 0.25.
                 - note_velocity (int): The velocity of the note.
@@ -127,5 +127,53 @@ class LiveClient:
         command = Command(
             command=CommandType.SET_TRACK_NAME,
             params={'track_index': track_index, 'old_name': old_name, 'new_name': new_name}
+        )
+        return self.send_command(command)
+
+    def delete_track(self, track_index: int = None, track_name: str = None) -> Response:
+        """Delete a track by index or name
+        
+        Args:
+            track_index: Optional index of track to delete
+            track_name: Optional name of track to delete
+            
+        Returns:
+            Response indicating success or failure
+        
+        Note: Must specify exactly one of track_index or track_name
+        """
+        if (track_index is None) == (track_name is None):
+            raise ValueError("Must specify exactly one of track_index or track_name")
+        
+        command = Command(
+            command=CommandType.DELETE_TRACK,
+            params={
+                'track_index': track_index,
+                'track_name': track_name
+            }
+        )
+        return self.send_command(command)
+
+    def get_track_index(self, track_name: str) -> Response:
+        """Get all indices of tracks matching the given name
+        
+        Args:
+            track_name: Name of the tracks to find
+            
+        Returns:
+            Response containing:
+                - track_indices: List of indices where tracks with this name were found
+                - track_name: The name that was searched for
+                - count: Number of matching tracks found
+            
+        Raises:
+            ValueError: If track_name is empty
+        """
+        if not track_name:
+            raise ValueError("track_name cannot be empty")
+        
+        command = Command(
+            command=CommandType.GET_TRACK_INDEX,
+            params={'track_name': track_name}
         )
         return self.send_command(command)

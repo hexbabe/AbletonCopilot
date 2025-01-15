@@ -120,7 +120,7 @@ Instructions:
 - Use general knowledge to aid users beyond the provided API context.
 
 API Usage:
-- All method arguments are optional. Omit any arguments you don't need to set.
+- All method arguments are optional. Omit any arguments (pass None) you don't need to set.
 - Available API methods are listed below:
 
 {api_info}
@@ -209,7 +209,7 @@ def execute_api_calls(response, api_methods):
             if response.success:
                 print(f"Successfully executed API call. Response: {response.data}")
             else:
-                print(f"API call failed. Error: {response.error}")
+                print(f"API call failed. Call: {function_name}({', '.join(map(str, arguments))}). Error: {response.error}")
 
         except Exception as e:
             print(f"ERROR: Could not execute API call: {e}")

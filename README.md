@@ -53,4 +53,4 @@ The project consists of three main components:
 
 1. Install/clone this repo and the Copilot server script in your Ableton Live MIDI Remote Scripts folder
 2. Enable the Copilot script in Live's MIDI preferences
-3. Use the Python LLM to start controlling Live
+3. Use the Python LLM client to start controlling Live

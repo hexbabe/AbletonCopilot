@@ -1,6 +1,6 @@
 # Ableton Live Copilot
 
-A Python-based remote control interface for Ableton Live that enables programmatic control of Live sets through a client-server architecture.
+An AI-powered music production assistant that enables natural language control of Ableton Live. This project bridges the gap between human creativity and digital audio workstations by allowing producers to control Ableton Live using plain English commands.
 
 ## Overview
 
